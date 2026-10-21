@@ -2,6 +2,11 @@
 - [x] Cloud schema, roles, duplicate confirmation and fuel calculations
 - [x] Passenger-bus branding and sidebar dashboard
 - [x] Bengali dashboard, trip, fuel, master data and staff pages
-- [ ] Owner email confirmation required to complete master-admin access and verify staff creation
+- [x] Owner-confirmed master-admin access
+- [ ] Same-day and next-day reconciliation, return-date counts and rankings
+- [ ] Matched-trip fuel linkage and calculations
+- [ ] Edit/delete controls and counter serial ordering
+- [ ] Textured background, colored hierarchy and return-trip terminology
+- [ ] Regression tests and signed-in end-to-end verification
 - [x] Date filters, PDF, print and file sharing controls
 - [x] Tests and signed-in trip/fuel entry, duplicate confirmation, reload and PDF download checks
