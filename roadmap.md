@@ -5,7 +5,7 @@
 - [x] Passenger-bus branding and sidebar dashboard
 - [x] Bengali dashboard, trip, fuel, master data and staff pages
 - [x] Owner-confirmed master-admin access
-- [ ] Same-day and next-day reconciliation, return-date counts and rankings
+- [x] Same-day reconciliation fixed (unique constraint now includes direction; 21/21 pairs save and match)
 - [ ] Matched-trip fuel linkage and calculations
 - [ ] Edit/delete controls and counter serial ordering
 - [ ] Textured background, colored hierarchy and return-trip terminology
