@@ -1,4 +1,6 @@
 # Trip Log
+- [x] Restore remixed owner activation and confirmation resend
+- [ ] Verify owner password login after email confirmation (waiting for owner confirmation)
 - [x] Cloud schema, roles, duplicate confirmation and fuel calculations
 - [x] Passenger-bus branding and sidebar dashboard
 - [x] Bengali dashboard, trip, fuel, master data and staff pages
