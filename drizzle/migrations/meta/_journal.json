@@ -8,6 +8,13 @@
       "when": 1792558674157,
       "tag": "0000_restore_verified_owner_activation",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792561927182,
+      "tag": "0001_fix_ordinal_unique_per_direction",
+      "breakpoints": true
     }
   ]
 }
