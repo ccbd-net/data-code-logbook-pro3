@@ -24,3 +24,5 @@
 .lang-toggle{display:inline-flex;border:1px solid var(--border);border-radius:6px;padding:2px;background:var(--muted)}
 .lang-toggle button{border:0;background:transparent;padding:4px 10px;font-size:12px;border-radius:4px;color:var(--muted-foreground)}
 .lang-toggle button.active{background:var(--card);color:var(--primary);font-weight:600;box-shadow:var(--shadow)}
+
+.master-row .row-action{width:26px;height:26px;padding:0;color:var(--muted-foreground)}.master-row .row-action svg{width:14px;height:14px}.master-row .row-action:first-of-type{margin-left:auto}
