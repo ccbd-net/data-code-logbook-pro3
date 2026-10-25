@@ -37,7 +37,7 @@ export const editStaff=createServerFn({method:'POST'}).middleware([requireSupaba
  if(findErr||!acc)throw new Error('অ্যাকাউন্ট পাওয়া যায়নি।');
  const {error:updErr}=await supabaseAdmin.from('staff_accounts').update({display_name:data.name}).eq('id',data.id);
  if(updErr)throw new Error('পরিবর্তন হয়নি।');
- if(data.pin){const {error:pwErr}=await supabaseAdmin.auth.admin.updateUser(acc.user_id,{password:staffPassword(acc.staff_code,data.pin)});if(pwErr)throw new Error('পিন বদলায়নি, তবে নাম সংরক্ষিত হয়েছে।');}
+ if(data.pin){const {error:pwErr}=await supabaseAdmin.auth.admin.updateUserById(acc.user_id,{password:staffPassword(acc.staff_code,data.pin)});if(pwErr)throw new Error('পিন বদলায়নি, তবে নাম সংরক্ষিত হয়েছে।');}
  return {ok:true};
 });
 export const deleteStaff=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(z.object({id:z.string().uuid()})).handler(async({context,data})=>{
