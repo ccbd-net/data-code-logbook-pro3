@@ -240,6 +240,20 @@ export type Database = {
         Returns: boolean
       }
       staff_access: { Args: never; Returns: string }
+      update_log: {
+        Args: {
+          p_date: string
+          p_driver: string
+          p_id: string
+          p_night_hold?: boolean
+          p_quantity: number
+          p_route?: string
+          p_supervisor: string
+          p_time: string
+          p_vehicle: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "staff"
