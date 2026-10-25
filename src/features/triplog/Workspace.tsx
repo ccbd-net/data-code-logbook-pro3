@@ -10,7 +10,7 @@ import {Input} from '@/components/ui/input';
 import {toast} from 'sonner';
 import logo from '@/assets/triplog-bus-logo.png';
 import {supabase} from '@/integrations/supabase/client';
-import {loadWorkspace,createStaff,setStaffActive,updateStaff} from '@/lib/triplog.functions';
+import {loadWorkspace,createStaff,setStaffActive,updateStaff,editStaff,deleteStaff} from '@/lib/triplog.functions';
 import {useSession} from './session';
 import {useLang} from './lang';
 import {num,today,nowTime,ordinalLabel,rankPeople,fuelMath,weekday,staffPassword,pairTrips,joinRoute,type Lang} from './logic';
@@ -33,11 +33,12 @@ function Picker({label,items,value,onChange}:{label:string;items:Data['master'];
 
 function WorkspaceView({page,data}:{page:Page;data:Data}){
  const session=useSession(),queryClient=useQueryClient(),navigate=useNavigate();const {lang,setLang,t}=useLang();
- const createStaffFn=useServerFn(createStaff),updateStaffFn=useServerFn(updateStaff),activeFn=useServerFn(setStaffActive);
+ const createStaffFn=useServerFn(createStaff),updateStaffFn=useServerFn(updateStaff),activeFn=useServerFn(setStaffActive),editStaffFn=useServerFn(editStaff),deleteStaffFn=useServerFn(deleteStaff);
  const [mobile,setMobile]=useState(false),[login,setLogin]=useState(false),[signup,setSignup]=useState(false),[needsConfirmation,setNeedsConfirmation]=useState(false),[identity,setIdentity]=useState(''),[password,setPassword]=useState(''),[busy,setBusy]=useState(false);
  const [start,setStart]=useState(''),[end,setEnd]=useState(''),[month,setMonth]=useState(''),[search,setSearch]=useState(''),[clock,setClock]=useState('—'),[tab,setTab]=useState<'supervisor'|'driver'>('supervisor');
  const [entry,setEntry]=useState<'trip'|'fuel'|null>(null),[date,setDate]=useState(''),[time,setTime]=useState(''),[vehicle,setVehicle]=useState(''),[supervisor,setSupervisor]=useState(''),[driver,setDriver]=useState(''),[quantity,setQuantity]=useState(''),[confirm,setConfirm]=useState(false),[duplicateOrdinal,setDuplicateOrdinal]=useState(2);
  const [masterOpen,setMasterOpen]=useState(false),[masterKind,setMasterKind]=useState('vehicle'),[masterName,setMasterName]=useState(''),[masterEditId,setMasterEditId]=useState<string|null>(null),[staffOpen,setStaffOpen]=useState(false),[staffName,setStaffName]=useState(''),[staffCode,setStaffCode]=useState(''),[staffPin,setStaffPin]=useState(''),[allowance,setAllowance]=useState(''),[price,setPrice]=useState('');
+ const [editLogId,setEditLogId]=useState<string|null>(null),[staffEditId,setStaffEditId]=useState<string|null>(null);
  const [printedAt,setPrintedAt]=useState('');const [route,setRoute]=useState(''),[nightHold,setNightHold]=useState(false),[dir,setDir]=useState<'up'|'down'>('up'),[masterDir,setMasterDir]=useState('up'),[masterDist,setMasterDist]=useState(''),[staffAccess,setStaffAccess]=useState<'trip_operator'|'fuel_manager'>('trip_operator'),[staffCounter,setStaffCounter]=useState('');
  const report=useRef<HTMLDivElement>(null);
  useEffect(()=>{setStart(today().slice(0,8)+'01');setEnd(today());setDate(today());setTime(nowTime());const update=()=>setClock(new Date().toLocaleTimeString('en-GB',{timeZone:'Asia/Dhaka'}));update();const iv=setInterval(update,1000);return ()=>clearInterval(iv);},[]);
@@ -67,7 +68,9 @@ function WorkspaceView({page,data}:{page:Page;data:Data}){
  const reportRows=pairTrips(trips).map(p=>{const a=(p.up??p.down)!;const ru=md(p.up?.route_id??null),rd=md(p.down?.route_id??null);const routeName=ru&&rd?joinRoute(ru.name,rd.name):(ru??rd)?.name??'—';const dist=(ru?.distance??0)+(rd?.distance??0);const f=fuelFor(a);return {key:(p.up?.id??'')+(p.down?.id??''),a,p,routeName,dist,qty:f.reduce((x,y)=>x+y.quantity,0),taka:f.reduce((x,y)=>x+(y.total??0),0),matchDate:p.down?.entry_date??a.entry_date,timeLabel:p.up&&p.down?`${p.up.entry_time.slice(0,5)} → ${p.down.entry_time.slice(0,5)}`:a.entry_time.slice(0,5)};});
  // A trip counts only when up+down are matched, and it counts on the down (return) date — night-hold pairs therefore count on the second day.
  const matchedPairs=reportRows.filter(r=>r.p.up&&r.p.down);
-  async function delLog(id:string){if(!window.confirm(t.del+'?'))return;const {error}=await supabase.rpc('delete_log',{p_id:id});if(error)toast.error(t.changeFail);else{refresh();toast.success(t.deleted);}}
+   async function delLog(id:string){if(!window.confirm(t.del+'?'))return;const {error}=await supabase.rpc('delete_log',{p_id:id});if(error)toast.error(t.changeFail);else{refresh();toast.success(t.deleted);}}
+ const editLog=(l:Data['logs'][number])=>{if(!requireLogin())return;if(l.kind==='fuel'?!canFuel:!canTrip)return;setEntry(l.kind);setEditLogId(l.id);setDate(l.entry_date);setTime(l.entry_time.slice(0,5));setVehicle(l.vehicle_id);setSupervisor(l.supervisor_id);setDriver(l.driver_id);setQuantity(String(l.quantity));setRoute(l.route_id??'');setNightHold(l.night_hold);setDir((l.direction as 'up'|'down')??'up');};
+ const openNewStaff=()=>{setStaffEditId(null);setStaffName('');setStaffCode('');setStaffPin('');setStaffAccess('trip_operator');setStaffCounter('');setStaffOpen(true);};
  const editMaster=(m:Data['master'][number])=>{setMasterEditId(m.id);setMasterKind(m.kind);setMasterName(m.name);setMasterDir(m.direction??'up');setMasterDist(m.distance!=null?String(m.distance):'');setMasterOpen(true);};
  async function delMaster(id:string){if(!window.confirm(t.del+'?'))return;const {error}=await supabase.from('master_data').delete().eq('id',id);if(error)toast.error(t.delFail);else{refresh();toast.success(t.deleted);}}
  const rangeText=month?month:`${fmtDate(start,lang)} — ${fmtDate(end,lang)}`;
