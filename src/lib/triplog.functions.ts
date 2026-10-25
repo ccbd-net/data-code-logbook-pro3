@@ -30,3 +30,26 @@ export const updateStaff=createServerFn({method:'POST'}).middleware([requireSupa
  const {data:role}=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'admin'});if(!role) throw new Error('অনুমতি নেই।');
  const {supabaseAdmin}=await import('@/integrations/supabase/client.server');const {error}=await supabaseAdmin.from('staff_accounts').update({access:data.access,counter_id:data.counter}).eq('id',data.id);if(error)throw new Error('পরিবর্তন হয়নি।');return {ok:true};
 });
+export const editStaff=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(z.object({id:z.string().uuid(),name:z.string().min(1).max(100),pin:z.string().regex(/^\d{4,12}$/).optional()})).handler(async({context,data})=>{
+ const {data:role,error:roleError}=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'admin'});if(roleError||!role)throw new Error('অনুমতি নেই।');
+ const {supabaseAdmin}=await import('@/integrations/supabase/client.server');
+ const {data:acc,error:findErr}=await supabaseAdmin.from('staff_accounts').select('user_id,staff_code').eq('id',data.id).maybeSingle();
+ if(findErr||!acc)throw new Error('অ্যাকাউন্ট পাওয়া যায়নি।');
+ const {error:updErr}=await supabaseAdmin.from('staff_accounts').update({display_name:data.name}).eq('id',data.id);
+ if(updErr)throw new Error('পরিবর্তন হয়নি।');
+ if(data.pin){const {error:pwErr}=await supabaseAdmin.auth.admin.updateUser(acc.user_id,{password:staffPassword(acc.staff_code,data.pin)});if(pwErr)throw new Error('পিন বদলায়নি, তবে নাম সংরক্ষিত হয়েছে।');}
+ return {ok:true};
+});
+export const deleteStaff=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(z.object({id:z.string().uuid()})).handler(async({context,data})=>{
+ const {data:role,error:roleError}=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'admin'});if(roleError||!role)throw new Error('অনুমতি নেই।');
+ const {supabaseAdmin}=await import('@/integrations/supabase/client.server');
+ const {data:acc,error:findErr}=await supabaseAdmin.from('staff_accounts').select('user_id').eq('id',data.id).maybeSingle();
+ if(findErr||!acc)throw new Error('অ্যাকাউন্ট পাওয়া যায়নি।');
+ if(acc.user_id===context.userId)throw new Error('নিজের অ্যাকাউন্ট মোছা যাবে না।');
+ const del=await supabaseAdmin.from('staff_accounts').delete().eq('id',data.id);
+ if(del.error)throw new Error('মোছা যায়নি।');
+ await supabaseAdmin.from('user_roles').delete().eq('user_id',acc.user_id);
+ const {error:rmErr}=await supabaseAdmin.auth.admin.deleteUser(acc.user_id);
+ if(rmErr)throw new Error('অ্যাকাউন্ট সম্পূর্ণভাবে মোছা যায়নি।');
+ return {ok:true};
+});

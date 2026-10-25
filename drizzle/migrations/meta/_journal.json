@@ -15,6 +15,13 @@
       "when": 1792561927182,
       "tag": "0001_fix_ordinal_unique_per_direction",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792951365419,
+      "tag": "0002_create_update_log",
+      "breakpoints": true
     }
   ]
 }
