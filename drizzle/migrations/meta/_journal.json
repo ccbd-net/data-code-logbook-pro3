@@ -1,1 +1,13 @@
-{"version":"7","dialect":"postgresql","entries":[]}
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1792974894377,
+      "tag": "0000_route_fuel_quota_and_log_fixes",
+      "breakpoints": true
+    }
+  ]
+}

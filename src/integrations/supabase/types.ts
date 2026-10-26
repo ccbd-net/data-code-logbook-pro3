@@ -129,25 +129,31 @@ export type Database = {
           created_at: string
           direction: string | null
           distance: number | null
+          fuel_allowance: number | null
           id: string
           kind: string
           name: string
+          serial: number | null
         }
         Insert: {
           created_at?: string
           direction?: string | null
           distance?: number | null
+          fuel_allowance?: number | null
           id?: string
           kind: string
           name: string
+          serial?: number | null
         }
         Update: {
           created_at?: string
           direction?: string | null
           distance?: number | null
+          fuel_allowance?: number | null
           id?: string
           kind?: string
           name?: string
+          serial?: number | null
         }
         Relationships: []
       }
