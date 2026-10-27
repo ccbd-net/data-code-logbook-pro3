@@ -8,6 +8,13 @@
       "when": 1792974894377,
       "tag": "0000_route_fuel_quota_and_log_fixes",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793064643615,
+      "tag": "0001_mileage_based_fuel_allowance",
+      "breakpoints": true
     }
   ]
 }
