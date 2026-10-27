@@ -18,16 +18,19 @@ export type Database = {
         Row: {
           allowance: number
           id: boolean
+          mileage: number
           unit_price: number
         }
         Insert: {
           allowance?: number
           id?: boolean
+          mileage?: number
           unit_price?: number
         }
         Update: {
           allowance?: number
           id?: boolean
+          mileage?: number
           unit_price?: number
         }
         Relationships: []
@@ -244,6 +247,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      round_trip_allowance: {
+        Args: { p_date: string; p_vehicle: string }
+        Returns: number
       }
       staff_access: { Args: never; Returns: string }
       update_log: {
