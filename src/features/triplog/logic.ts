@@ -119,6 +119,17 @@ export function weekday(date:string,lang:Lang='bn'){if(!date)return '';return WE
 /** Staff log in with ID+PIN; the auth password is derived so short PINs pass password policy. */
 export function staffPassword(code:string,pin:string){return `TL#${code.trim().toLowerCase()}@${pin}!Trip`;}
 export function joinRoute(a:string,b:string){const pa=a.split(/\s*-\s*/),pb=b.split(/\s*-\s*/);if(pa[pa.length-1]===pb[0])return [...pa,...pb.slice(1)].join(' - ');return [...pa,...pb].join(' - ');}
+/** Planned fuel for a round trip: total km divided by the admin-set mileage (km per litre). */
+export function quota(totalKm:number,mileage:number){if(!mileage||mileage<=0)return 0;return Math.round((totalKm/mileage)*100)/100;}
+export type Variance='over'|'under'|'exact';
+/** Fuel variance: given more than planned = 'over' (red +), saving = 'under' (green −), equal = 'exact' (blue 0). */
+export function varianceOf(excess:number):Variance{return excess>0?'over':excess<0?'under':'exact';}
+export function varianceText(excess:number,lang:Lang='bn'){const v=Math.round(Math.abs(excess)*100)/100;return excess>0?`+${num(v,lang)}`:excess<0?`−${num(v,lang)}`:num(0,lang);}
+/** Bengali 12-hour periods: ভোর ৪–৭, সকাল ৭–১১, দুপুর ১১–৩, বিকাল ৩–৬, সন্ধ্যা ৬–৭, রাত ৭–১১:৫৯. */
+export function periodOf(hour:number){if(hour<4)return 'রাত';if(hour<7)return 'ভোর';if(hour<11)return 'সকাল';if(hour<15)return 'দুপুর';if(hour<18)return 'বিকাল';if(hour<19)return 'সন্ধ্যা';return 'রাত';}
+export function timeLabel(time:string,lang:Lang='bn'){const parts=time.split(':').map(Number);const hour=((parts[0]??0)+24)%24,min=parts[1]??0;const hh12=hour%12===0?12:hour%12;const mm=`${min<10?'0':''}${bn(min)}`;if(lang==='en')return `${hh12}:${String(min).padStart(2,'0')} ${hour<12?'AM':'PM'}`;return `${periodOf(hour)} ${bn(hh12)}:${mm}`;}
+/** Gap between up and down trip times; an earlier down time (night hold) wraps past midnight. */
+export function tripDuration(down:string,up:string,lang:Lang='bn'){const mins=Math.max(0,((Number(down.slice(0,2))*60+Number(down.slice(3,5)))-(Number(up.slice(0,2))*60+Number(up.slice(3,5)))+1440)%1440);const h=Math.floor(mins/60),m=mins%60;if(lang==='en')return `${h}h${m?` ${m}m`:''}`;return `${bn(h)} ঘণ্টা${m?` ${bn(m)} মিনিট`:''}`;}
 export type TripRow={id:string;entry_date:string;entry_time:string;vehicle_id:string;direction:string|null;night_hold:boolean;route_id:string|null};
 export type Pair<T>={up:T|null;down:T|null};
 /** Match each Up trip with the vehicle's next Down trip: same date, or next date when either is night-hold. */
