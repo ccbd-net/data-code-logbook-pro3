@@ -61,7 +61,7 @@ export const STR={
   loading:'ট্রিপ লগ লোড হচ্ছে…',passengerBus:'যাত্রীবাহী বাস',transportMgmt:'পরিবহন ব্যবস্থাপনা',cloudOk:'Lovable Cloud সংযুক্ত',
  },
  en:{
-  dashboard:'Dashboard',trips:'Trip Log',fuel:'Fuel Log',database:'Database',users:'User Management',
+  dashboard:'Dashboard',trips:'Trip Log',fuel:'Fuel Log',database:'Database',users:'User Management',roundtrip:'Round Trip Database',
   workspace:'Workspace',newTrip:'New Trip',fuelEntry:'Fuel Entry',newData:'New Data',newUser:'New User',
   from:'to',todayBtn:'Today',print:'Print',pdf:'PDF',share:'Share file on WhatsApp',
   serial:'SL',date:'Date',time:'Time',vehicle:'Vehicle No',supervisor:'Supervisor',driver:'Driver',
