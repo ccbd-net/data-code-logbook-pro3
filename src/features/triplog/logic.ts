@@ -10,7 +10,7 @@ export function pageHead(title:string){const description=`ট্রিপ লগ
 
 export const STR={
  bn:{
-  dashboard:'ড্যাশবোর্ড',trips:'ট্রিপ লগ',fuel:'ফুয়েল লগ',database:'ডাটাবেইজ',users:'ইউজার ম্যানেজমেন্ট',
+  dashboard:'ড্যাশবোর্ড',trips:'ট্রিপ লগ',fuel:'ফুয়েল লগ',database:'ডাটাবেইজ',users:'ইউজার ম্যানেজমেন্ট',roundtrip:'রাউন্ড ট্রিপ ডাটাবেজ',
   workspace:'ওয়ার্কস্পেস',newTrip:'নতুন ট্রিপ',fuelEntry:'ফুয়েল এন্ট্রি',newData:'নতুন তথ্য',newUser:'নতুন ইউজার',
   from:'থেকে',todayBtn:'আজ',print:'প্রিন্ট',pdf:'পিডিএফ',share:'WhatsApp-এ ফাইল শেয়ার',
   serial:'ক্রমিক নং',date:'তারিখ',time:'সময়',vehicle:'গাড়ি নাম্বার',supervisor:'সুপারভাইজার',driver:'ড্রাইভার',
@@ -61,7 +61,7 @@ export const STR={
   loading:'ট্রিপ লগ লোড হচ্ছে…',passengerBus:'যাত্রীবাহী বাস',transportMgmt:'পরিবহন ব্যবস্থাপনা',cloudOk:'Lovable Cloud সংযুক্ত',
  },
  en:{
-  dashboard:'Dashboard',trips:'Trip Log',fuel:'Fuel Log',database:'Database',users:'User Management',
+  dashboard:'Dashboard',trips:'Trip Log',fuel:'Fuel Log',database:'Database',users:'User Management',roundtrip:'Round Trip Database',
   workspace:'Workspace',newTrip:'New Trip',fuelEntry:'Fuel Entry',newData:'New Data',newUser:'New User',
   from:'to',todayBtn:'Today',print:'Print',pdf:'PDF',share:'Share file on WhatsApp',
   serial:'SL',date:'Date',time:'Time',vehicle:'Vehicle No',supervisor:'Supervisor',driver:'Driver',
@@ -119,6 +119,17 @@ export function weekday(date:string,lang:Lang='bn'){if(!date)return '';return WE
 /** Staff log in with ID+PIN; the auth password is derived so short PINs pass password policy. */
 export function staffPassword(code:string,pin:string){return `TL#${code.trim().toLowerCase()}@${pin}!Trip`;}
 export function joinRoute(a:string,b:string){const pa=a.split(/\s*-\s*/),pb=b.split(/\s*-\s*/);if(pa[pa.length-1]===pb[0])return [...pa,...pb.slice(1)].join(' - ');return [...pa,...pb].join(' - ');}
+/** Planned fuel for a round trip: total km divided by the admin-set mileage (km per litre). */
+export function quota(totalKm:number,mileage:number){if(!mileage||mileage<=0)return 0;return Math.round((totalKm/mileage)*100)/100;}
+export type Variance='over'|'under'|'exact';
+/** Fuel variance: given more than planned = 'over' (red +), saving = 'under' (green −), equal = 'exact' (blue 0). */
+export function varianceOf(excess:number):Variance{return excess>0?'over':excess<0?'under':'exact';}
+export function varianceText(excess:number,lang:Lang='bn'){const v=Math.round(Math.abs(excess)*100)/100;return excess>0?`+${num(v,lang)}`:excess<0?`−${num(v,lang)}`:num(0,lang);}
+/** Bengali 12-hour periods: ভোর ৪–৭, সকাল ৭–১১, দুপুর ১১–৩, বিকাল ৩–৬, সন্ধ্যা ৬–৭, রাত ৭–১১:৫৯. */
+export function periodOf(hour:number){if(hour<4)return 'রাত';if(hour<7)return 'ভোর';if(hour<11)return 'সকাল';if(hour<15)return 'দুপুর';if(hour<18)return 'বিকাল';if(hour<19)return 'সন্ধ্যা';return 'রাত';}
+export function timeLabel(time:string,lang:Lang='bn'){const parts=time.split(':').map(Number);const hour=((parts[0]??0)+24)%24,min=parts[1]??0;const hh12=hour%12===0?12:hour%12;const mm=`${min<10?'0':''}${bn(min)}`;if(lang==='en')return `${hh12}:${String(min).padStart(2,'0')} ${hour<12?'AM':'PM'}`;return `${periodOf(hour)} ${bn(hh12)}:${mm}`;}
+/** Gap between up and down trip times; an earlier down time (night hold) wraps past midnight. */
+export function tripDuration(down:string,up:string,lang:Lang='bn'){const mins=Math.max(0,((Number(down.slice(0,2))*60+Number(down.slice(3,5)))-(Number(up.slice(0,2))*60+Number(up.slice(3,5)))+1440)%1440);const h=Math.floor(mins/60),m=mins%60;if(lang==='en')return `${h}h${m?` ${m}m`:''}`;return `${bn(h)} ঘণ্টা${m?` ${bn(m)} মিনিট`:''}`;}
 export type TripRow={id:string;entry_date:string;entry_time:string;vehicle_id:string;direction:string|null;night_hold:boolean;route_id:string|null};
 export type Pair<T>={up:T|null;down:T|null};
 /** Match each Up trip with the vehicle's next Down trip: same date, or next date when either is night-hold. */
@@ -133,6 +144,6 @@ export function pairTrips<T extends TripRow>(rows:T[]):Pair<T>[]{
  return out;
 }
 export const STR2={
- bn:{database:'ডাটা ম্যানুফ্যাকচার',report:'ট্রিপ সমন্বয় রিপোর্ট',dbSub:'গাড়ি, সুপারভাইজার, ড্রাইভার, রুট ও কাউন্টারের তালিকা।',reportSub:'আপ ও ডাউন ট্রিপ মিলিয়ে পূর্ণ রুট, দূরত্ব ও তেল।',routes:'রুট',counters:'কাউন্টার',route:'রুট',distance:'দূরত্ব (কিমি)',direction:'দিক',up:'আপ ট্রিপ',down:'ডাউন ট্রিপ',nightHold:'নাইট হোল্ড',day:'বার',fullRoute:'পূর্ণ রুট',pending:'ফিরতি বাকি',matched:'সমন্বিত',role:'রোল',tripOperator:'ট্রিপ অপারেটর',fuelManager:'ফুয়েল ম্যানেজার',counter:'কাউন্টার',none:'— নেই —',viewOnly:'শুধু দেখার অনুমতি',del:'মুছুন',deleted:'মুছে ফেলা হয়েছে।',edit:'সম্পাদনা',editDb:'তথ্য সম্পাদনা',edited:'সম্পাদনা সংরক্ষিত হয়েছে।',delFail:'মুছে ফেলা যায়নি। ট্রিপে ব্যবহৃত তথ্য মোছা যায় না।',fuelLitre:'তেল (লি.)',taka:'টাকা',editEntry:'এন্ট্রি সম্পাদনা',staffEditTitle:'স্টাফ সম্পাদনা',newPin:'নতুন পিন (বদলাতে চাইলে দিন)',staffEdited:'স্টাফ তথ্য সংরক্ষিত হয়েছে।',staffDeleted:'স্টাফ অ্যাকাউন্ট মুছে ফেলা হয়েছে।'},
- en:{database:'Data Manufacture',report:'Trip Reconciliation Report',dbSub:'Vehicles, supervisors, drivers, routes and counters.',reportSub:'Up and down trips matched into full route, distance and fuel.',routes:'Routes',counters:'Counters',route:'Route',distance:'Distance (km)',direction:'Direction',up:'Up trip',down:'Down trip',nightHold:'Night hold',day:'Day',fullRoute:'Full route',pending:'Return pending',matched:'Matched',role:'Role',tripOperator:'Trip operator',fuelManager:'Fuel manager',counter:'Counter',none:'— None —',viewOnly:'View only',del:'Delete',deleted:'Deleted.',edit:'Edit',editDb:'Edit Data',edited:'Changes saved.',delFail:'Could not delete. Data used in trips cannot be removed.',fuelLitre:'Fuel (L)',taka:'Taka',editEntry:'Edit Entry',staffEditTitle:'Edit Staff',newPin:'New PIN (leave blank to keep)',staffEdited:'Staff details saved.',staffDeleted:'Staff account deleted.'},
+ bn:{database:'ডাটা ম্যানুফ্যাকচার',report:'ট্রিপ সমন্বয় রিপোর্ট',dbSub:'গাড়ি, সুপারভাইজার, ড্রাইভার, রুট ও কাউন্টারের তালিকা।',reportSub:'আপ ও ডাউন ট্রিপ মিলিয়ে পূর্ণ রুট, দূরত্ব ও তেল।',routes:'রুট',counters:'কাউন্টার',route:'রুট',distance:'দূরত্ব (কিমি)',direction:'দিক',up:'আপ ট্রিপ',down:'ডাউন ট্রিপ',nightHold:'নাইট হোল্ড',day:'বার',fullRoute:'পূর্ণ রুট',pending:'ফিরতি বাকি',matched:'সমন্বিত',role:'রোল',tripOperator:'ট্রিপ অপারেটর',fuelManager:'ফুয়েল ম্যানেজার',counter:'কাউন্টার',none:'— নেই —',viewOnly:'শুধু দেখার অনুমতি',del:'মুছুন',deleted:'মুছে ফেলা হয়েছে।',edit:'সম্পাদনা',editDb:'তথ্য সম্পাদনা',edited:'সম্পাদনা সংরক্ষিত হয়েছে।',delFail:'মুছে ফেলা যায়নি। ট্রিপে ব্যবহৃত তথ্য মোছা যায় না।',fuelLitre:'তেল (লি.)',taka:'টাকা',editEntry:'এন্ট্রি সম্পাদনা',staffEditTitle:'স্টাফ সম্পাদনা',newPin:'নতুন পিন (বদলাতে চাইলে দিন)',staffEdited:'স্টাফ তথ্য সংরক্ষিত হয়েছে।',staffDeleted:'স্টাফ অ্যাকাউন্ট মুছে ফেলা হয়েছে।',mileageL:'মাইলেজ (কিমি/লিটার)',totalKmL:'মোট কিমি',plannedFuel:'নির্ধারিত ফুয়েল (লি.)',givenFuel:'প্রদানকৃত ফুয়েল (লি.)',fuelVar:'ফুয়েল +/-',timeGap:'সময় ব্যাবধান',updateBtn:'আপডেট করুন',serialL:'সিরিয়াল',rtSub:'সমন্বিত রাউন্ড ট্রিপের পূর্ণ হিসাব — কিমি, নির্ধারিত ও প্রদানকৃত তেল, পার্থক্য।',currentRate:'বর্তমান তেলের মূল্য'},
+ en:{database:'Data Manufacture',report:'Trip Reconciliation Report',dbSub:'Vehicles, supervisors, drivers, routes and counters.',reportSub:'Up and down trips matched into full route, distance and fuel.',routes:'Routes',counters:'Counters',route:'Route',distance:'Distance (km)',direction:'Direction',up:'Up trip',down:'Down trip',nightHold:'Night hold',day:'Day',fullRoute:'Full route',pending:'Return pending',matched:'Matched',role:'Role',tripOperator:'Trip operator',fuelManager:'Fuel manager',counter:'Counter',none:'— None —',viewOnly:'View only',del:'Delete',deleted:'Deleted.',edit:'Edit',editDb:'Edit Data',edited:'Changes saved.',delFail:'Could not delete. Data used in trips cannot be removed.',fuelLitre:'Fuel (L)',taka:'Taka',editEntry:'Edit Entry',staffEditTitle:'Edit Staff',newPin:'New PIN (leave blank to keep)',staffEdited:'Staff details saved.',staffDeleted:'Staff account deleted.',mileageL:'Mileage (km/L)',totalKmL:'Total km',plannedFuel:'Planned fuel (L)',givenFuel:'Given fuel (L)',fuelVar:'Fuel +/-',timeGap:'Time gap',updateBtn:'Update',serialL:'Serial',rtSub:'Full round-trip accounts: km, planned and given fuel, variance.',currentRate:'Current fuel price'},
 };
