@@ -15,6 +15,13 @@
       "when": 1793064643615,
       "tag": "0001_mileage_based_fuel_allowance",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793161194889,
+      "tag": "0002_round_trip_allowance_null_guard",
+      "breakpoints": true
     }
   ]
 }
