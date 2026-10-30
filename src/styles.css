@@ -26,3 +26,7 @@
 .lang-toggle button.active{background:var(--card);color:var(--primary);font-weight:600;box-shadow:var(--shadow)}
 
 .master-row .row-action{width:26px;height:26px;padding:0;color:var(--muted-foreground)}.master-row .row-action svg{width:14px;height:14px}.master-row .row-action:first-of-type{margin-left:auto}
+.var-over{color:var(--destructive);font-weight:600}.var-under{color:var(--success);font-weight:600}.var-exact{color:var(--primary);font-weight:600}
+.fuel-ctx{border:1px solid var(--border);background:var(--muted);border-radius:6px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;font-size:12px}
+.fuel-ctx strong{font-weight:600}.fuel-ctx span{color:var(--muted-foreground);font-size:11px}
+.rt-date{font-variant-numeric:tabular-nums}

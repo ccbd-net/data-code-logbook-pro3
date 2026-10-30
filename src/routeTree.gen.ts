@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DatabaseRouteImport } from './routes/database'
 import { Route as FuelRouteImport } from './routes/fuel'
 import { Route as ReportRouteImport } from './routes/report'
+import { Route as RoundtripRouteImport } from './routes/roundtrip'
 import { Route as TripsRouteImport } from './routes/trips'
 import { Route as UsersRouteImport } from './routes/users'
 
@@ -36,6 +37,11 @@ const ReportRoute = ReportRouteImport.update({
   path: '/report',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RoundtripRoute = RoundtripRouteImport.update({
+  id: '/roundtrip',
+  path: '/roundtrip',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TripsRoute = TripsRouteImport.update({
   id: '/trips',
   path: '/trips',
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/database': typeof DatabaseRoute
   '/fuel': typeof FuelRoute
   '/report': typeof ReportRoute
+  '/roundtrip': typeof RoundtripRoute
   '/trips': typeof TripsRoute
   '/users': typeof UsersRoute
 }
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/database': typeof DatabaseRoute
   '/fuel': typeof FuelRoute
   '/report': typeof ReportRoute
+  '/roundtrip': typeof RoundtripRoute
   '/trips': typeof TripsRoute
   '/users': typeof UsersRoute
 }
@@ -69,15 +77,26 @@ export interface FileRoutesById {
   '/database': typeof DatabaseRoute
   '/fuel': typeof FuelRoute
   '/report': typeof ReportRoute
+  '/roundtrip': typeof RoundtripRoute
   '/trips': typeof TripsRoute
   '/users': typeof UsersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/database' | '/fuel' | '/report' | '/trips' | '/users'
+  fullPaths:
+    '/' | '/database' | '/fuel' | '/report' | '/roundtrip' | '/trips' | '/users'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/database' | '/fuel' | '/report' | '/trips' | '/users'
-  id: '__root__' | '/' | '/database' | '/fuel' | '/report' | '/trips' | '/users'
+  to:
+    '/' | '/database' | '/fuel' | '/report' | '/roundtrip' | '/trips' | '/users'
+  id:
+    | '__root__'
+    | '/'
+    | '/database'
+    | '/fuel'
+    | '/report'
+    | '/roundtrip'
+    | '/trips'
+    | '/users'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -85,6 +104,7 @@ export interface RootRouteChildren {
   DatabaseRoute: typeof DatabaseRoute
   FuelRoute: typeof FuelRoute
   ReportRoute: typeof ReportRoute
+  RoundtripRoute: typeof RoundtripRoute
   TripsRoute: typeof TripsRoute
   UsersRoute: typeof UsersRoute
 }
@@ -119,6 +139,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReportRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/roundtrip': {
+      id: '/roundtrip'
+      path: '/roundtrip'
+      fullPath: '/roundtrip'
+      preLoaderRoute: typeof RoundtripRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/trips': {
       id: '/trips'
       path: '/trips'
@@ -141,6 +168,7 @@ const rootRouteChildren: RootRouteChildren = {
   DatabaseRoute: DatabaseRoute,
   FuelRoute: FuelRoute,
   ReportRoute: ReportRoute,
+  RoundtripRoute: RoundtripRoute,
   TripsRoute: TripsRoute,
   UsersRoute: UsersRoute,
 }
